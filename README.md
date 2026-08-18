@@ -10,8 +10,11 @@ To write a program to implement the the Logistic Regression Using Gradient Desce
 
 ## Algorithm
 1.Initialize the weights and bias with zero.
+
 2.Calculate the sigmoid function and predicted probability.
+
 3.Calculate the error between actual and predicted values.
+
 4.Update the weights and bias using Gradient Descent until the specified number of iterations is completed.
 
 ## Program:
