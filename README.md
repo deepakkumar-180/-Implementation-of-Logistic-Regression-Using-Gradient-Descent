@@ -21,60 +21,87 @@ To write a program to implement the the Logistic Regression Using Gradient Desce
 
 ```
 
+import pandas as pd
 import numpy as np
 
-# Input data
-X = np.array([[1], [2], [3], [4], [5], [6]])
-y = np.array([0, 0, 0, 1, 1, 1])
+# Load CSV file
+data = pd.read_csv("placement.csv")
 
-# Initialize parameters
-w = 0.0
-b = 0.0
+# Select input features and target
+X = data[['ssc_p', 'hsc_p', 'degree_p', 'etest_p', 'mba_p']]
+y = data['status'].map({'Placed': 1, 'Not Placed': 0})
 
-learning_rate = 0.1
-iterations = 1000
+# Convert to NumPy arrays
+X = X.values
+y = y.values
+
+# Add bias column
+X = np.c_[np.ones(X.shape[0]), X]
+
+# Normalize features
+X[:, 1:] = (X[:, 1:] - X[:, 1:].mean(axis=0)) / X[:, 1:].std(axis=0)
+
+# Initialize weights
+weights = np.zeros(X.shape[1])
 
 # Sigmoid function
 def sigmoid(z):
     return 1 / (1 + np.exp(-z))
 
 # Gradient Descent
+learning_rate = 0.01
+iterations = 10000
+
 for i in range(iterations):
+    z = np.dot(X, weights)
+    prediction = sigmoid(z)
 
-    # Prediction
-    z = w * X[:, 0] + b
-    y_pred = sigmoid(z)
+    gradient = np.dot(X.T, (prediction - y)) / len(y)
+    weights = weights - learning_rate * gradient
 
-    # Calculate gradients
-    dw = np.mean((y_pred - y) * X[:, 0])
-    db = np.mean(y_pred - y)
+# Prediction
+predicted = (sigmoid(np.dot(X, weights)) >= 0.5).astype(int)
 
-    # Update parameters
-    w = w - learning_rate * dw
-    b = b - learning_rate * db
+# Accuracy
+accuracy = np.mean(predicted == y)
+print("Accuracy:", accuracy)
 
-# Predict function
-def predict(x):
-    probability = sigmoid(w * x + b)
-    return 1 if probability >= 0.5 else 0
+# Get student input
+print("\nEnter student details:")
 
-# Display results
-print("Weight:", w)
-print("Bias:", b)
+ssc = float(input("SSC Percentage: "))
+hsc = float(input("HSC Percentage: "))
+degree = float(input("Degree Percentage: "))
+etest = float(input("E-Test Percentage: "))
+mba = float(input("MBA Percentage: "))
 
-print("\nPredictions:")
-for x in X[:, 0]:
-    print("Input:", x, "Predicted Class:", predict(x))
+# Normalize input using training data
+input_data = np.array([ssc, hsc, degree, etest, mba])
+mean = data[['ssc_p', 'hsc_p', 'degree_p', 'etest_p', 'mba_p']].mean().values
+std = data[['ssc_p', 'hsc_p', 'degree_p', 'etest_p', 'mba_p']].std().values
 
-# Predict new value
-new_value = 3.5
-print("\nPrediction for", new_value, ":", predict(new_value))
+input_data = (input_data - mean) / std
+
+# Add bias
+input_data = np.insert(input_data, 0, 1)
+
+# Predict
+probability = sigmoid(np.dot(input_data, weights))
+
+print("\nPlacement Probability:", probability)
+
+if probability >= 0.5:
+    print("Prediction: Placed")
+else:
+    print("Prediction: Not Placed")
+
 
 ```
 
 ## Output:
 
-<img width="947" height="559" alt="image" src="https://github.com/user-attachments/assets/fb9efa79-9e6a-42d5-92b7-222415ad92aa" />
+<img width="999" height="757" alt="image" src="https://github.com/user-attachments/assets/7af5a75b-b071-47cc-9244-d80254064cc4" />
+
 
 
 
